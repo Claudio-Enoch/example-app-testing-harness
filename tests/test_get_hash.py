@@ -3,8 +3,10 @@ import base64
 
 import concurrent.futures
 
+import pytest
 
-def test_base_get_hash(hash_api):
+
+def test_get_hash(hash_api):
     body = {"password": "angry_monkey"}
     hash_id = hash_api.post_hash(body=body).text
     response = hash_api.get_hash(_id=hash_id)
@@ -18,6 +20,13 @@ def test_base_get_hash(hash_api):
     assert response.text == base64_encoded, "hash is not returning base64 encoded sha512 hashed password"
 
 
+@pytest.mark.parametrize("bad_hash_id", [900, -5, 99999999999999999999999999999, "abc"])
+def test_non_existent_hash_id(hash_api, bad_hash_id):
+    response = hash_api.get_hash(_id=bad_hash_id)
+    assert response.status_code == 400
+    assert response.text == "Hash not found\n"
+
+
 def test_unique_hashes_generated(hash_api):
     body = {"password": "angry_monkey"}
     r1_id = hash_api.post_hash(body=body).text
@@ -25,10 +34,10 @@ def test_unique_hashes_generated(hash_api):
     r1_hash = hash_api.get_hash(_id=r1_id).text
     r2_hash = hash_api.get_hash(_id=r2_id).text
 
-    assert r1_hash == r2_hash, f"hashes given the same password are unique"
+    assert r1_hash == r2_hash, f"hashes given the same password are different"
 
 
-def test_get_hash_concurrent_requests(hash_api):
+def test_concurrent_hash_requests(hash_api):
     body = {"password": "angry_monkey"}
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
