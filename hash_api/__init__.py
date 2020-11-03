@@ -11,6 +11,7 @@ dotenv.load_dotenv(override=True)
 
 
 class HashApi:
+    """basic wrapper around the hashing API"""
 
     def __init__(self):
         port = os.environ.get("PORT")
@@ -28,6 +29,6 @@ class HashApi:
         response = requests.get(f"{self._base_url}/stats")
         return response
 
-    def post_shutdown(self) -> Response:
-        response = requests.post(f"{self._base_url}/hash")
+    def post_shutdown(self, body="shutdown") -> Response:
+        response = requests.post(f"{self._base_url}/hash", data=body)
         return response
