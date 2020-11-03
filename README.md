@@ -1,10 +1,11 @@
-#Example App Testing Harness  
+# Example App Testing Harness  
 Test automation project in Python to demonstrate testing approach.  
 This projects wraps around a password hashing API.  
 
 ### Getting Started
 - install python3.8+  
 - update port in `.env` to match the API's running port
+- run `python -m pytest -v tests`
 
 ### Framework 
 **hash_api/** contains the api controller used to make tests more DRY 
